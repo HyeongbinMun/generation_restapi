@@ -1,5 +1,6 @@
 Django==4.0.3
 djangorestframework==3.13.1
+django-cors-headers
 pillow==9.0.1
 gunicorn==20.1.0
 celery==5.2.3
@@ -10,7 +11,7 @@ django-mysql==4.14.0
 redis==4.1.4
 opencv-python==4.10.0.84
 ultralytics==8.0.124
-timm==0.8.13.dev0
+timm==0.6.7
 yt_dlp
 lapx>=0.5.2
 opencv-contrib-python==4.10.0.84
