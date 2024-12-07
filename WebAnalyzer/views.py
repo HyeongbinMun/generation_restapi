@@ -26,18 +26,23 @@ class ImageViewSet(viewsets.ModelViewSet):
 
         return Response({
             'token': instance.token,
-            'image': request.build_absolute_uri(instance.image.url),
+            'image1': request.build_absolute_uri(instance.image1.url),
+            'image2': request.build_absolute_uri(instance.image2.url),
             'model_name': instance.model_name,
             'result_images': result_image_urls
         })
-
     def create(self, request, *args, **kwargs):
-        image = request.FILES.get('image')
+        image1 = request.FILES.get('image1')
+        image2 = request.FILES.get('image2')
         model_name = request.data.get('model_name', '')
-        if not image:
-            return Response({'error': 'Image file is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        image_instance = ImageModel(image=image, model_name=model_name)
+        if not image1 or not image2:
+            return Response(
+                {'error': 'Both image1 and image2 files are required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        image_instance = ImageModel(image1=image1, image2=image2, model_name=model_name)
         image_instance.save()
 
         return Response({

@@ -18,7 +18,8 @@ class ResultImage(models.Model):
     uploaded_date = models.DateTimeField(auto_now_add=True)
 
 class ImageModel(models.Model):
-    image = models.ImageField(upload_to=filename.default)
+    image1 = models.ImageField(upload_to=filename.default)
+    image2 = models.ImageField(upload_to=filename.default)
     model_name = models.CharField(max_length=255, blank=True, null=True)
     token = models.AutoField(primary_key=True)
     uploaded_date = models.DateTimeField(auto_now_add=True)
@@ -30,16 +31,15 @@ class ImageModel(models.Model):
 
         task_result = app.send_task(
             name='WebAnalyzer.tasks.analyzer_by_image',
-            args=[self.image.path, self.model_name],
+            args=[self.image1.path, self.image2.path, self.model_name],
             exchange='WebAnalyzer',
             routing_key='webanalyzer_tasks',
         )
 
-        result, out_images = task_result.get()
-        self.result = ast.literal_eval(str(result))
+        out_images = task_result.get()
 
         for idx, out_image in enumerate(out_images):
-            new_file_name = os.path.basename(self.image.name).split(".")[0] + f"_result_{idx}.png"
+            new_file_name = os.path.basename(self.image1.name).split(".")[0] + f"_result_{idx}.png"
             buffer = BytesIO()
             out_image.save(buffer, format='PNG')
             file_len = buffer.tell()
@@ -47,7 +47,7 @@ class ImageModel(models.Model):
 
             result_image = ResultImage(image_model=self)
             result_image.image.save(
-                f"{os.path.basename(self.image.name).split('.')[0]}_result_{idx}.png",
+                f"{os.path.basename(self.image1.name).split('.')[0]}_result_{idx}.png",
                 InMemoryUploadedFile(buffer, 'ImageField', new_file_name, 'image/png', file_len, None),
                 save=False
             )
